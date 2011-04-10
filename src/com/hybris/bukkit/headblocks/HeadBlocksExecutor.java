@@ -27,8 +27,8 @@ class HeadBlocksExecutor implements CommandExecutor{
                 // Self - Only if a Player
                 if(sender instanceof Player){
                     Player player = (Player)sender;
-			
-		    byte dataByte = 0;
+
+                    byte dataByte = 0;
                     String idOrMaterial = args[1];
                     if (idOrMaterial.contains(":")) {
                         String[] parts = idOrMaterial.split(":");
@@ -59,13 +59,26 @@ class HeadBlocksExecutor implements CommandExecutor{
                 Player player = plugin.getServer().getPlayer(playerName);
                 if(player == null){return false;}
 
+                byte dataByte = 0;
+                String idOrMaterial = args[2];
+                if (idOrMaterial.contains(":")) {
+                    String[] parts = idOrMaterial.split(":");
+                    String data = parts[1];
+                    idOrMaterial = parts[0];
+                    try {
+                         dataByte = Byte.parseByte(data);
+                    } catch (NumberFormatException e) {
+                        dataByte = 0;
+                    }
+                }
+
                 String idOrMaterial = args[2];
                 Material material = idParse(idOrMaterial);
                 if(material == null){return false;}
 
                 if(plugin.hasPermissions(sender, "other")){
                     // TODO Recuperer l'ancien et le mettre dans l'inventaire (si possible - sinon abandonner et return true)
-                    player.getInventory().setHelmet(new ItemStack(material, 1, (short)1, (byte)0)); // TODO Permettre de changer la couleur de la laine par exemple
+                    player.getInventory().setHelmet(new ItemStack(material, 1, (short)1, (byte)dataByte)); // TODO Permettre de changer la couleur de la laine par exemple
                     return true;
                 }
                 else{return false;}
