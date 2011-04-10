@@ -19,7 +19,6 @@ public class HeadBlocks extends JavaPlugin{
 		log.info("[HeadBlocks] Enabling...");
 		try{
 			// TODO
-			playerInv.setHelmet(new ItemStack(Material.GOLD_HELMET));
 			log.info("[HeadBlocks] Enabled");
 		}
 		catch(Exception e){
