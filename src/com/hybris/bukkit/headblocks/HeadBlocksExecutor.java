@@ -33,7 +33,7 @@ class HeadBlocksExecutor implements CommandExecutor{
 					
 					if(plugin.hasPermissions(sender, "self")){
 						// TODO Recuperer l'ancien et le mettre dans l'inventaire (si possible - sinon abandonner et return true)
-						player.getInventory().setHelmet(new ItemStack(material, 1, (short)0, (byte)0));
+						player.getInventory().setHelmet(new ItemStack(material, 1, (short)1, (byte)0)); // TODO Permettre de changer la couleur de la laine par exemple
 						return true;
 					}
 					else{return false;}
@@ -53,7 +53,7 @@ class HeadBlocksExecutor implements CommandExecutor{
 				
 				if(plugin.hasPermissions(sender, "other")){
 					// TODO Recuperer l'ancien et le mettre dans l'inventaire (si possible - sinon abandonner et return true)
-					player.getInventory().setHelmet(new ItemStack(material, 1, (short)0, (byte)0));
+					player.getInventory().setHelmet(new ItemStack(material, 1, (short)1, (byte)0)); // TODO Permettre de changer la couleur de la laine par exemple
 					return true;
 				}
 				else{return false;}
