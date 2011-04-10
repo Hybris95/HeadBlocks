@@ -1,0 +1,11 @@
+name: HeadBlocks
+main: com.hybris.bukkit.headblocks.HeadBlocks
+version: 0.2
+website: 
+author: Hybris95,Socolin
+description: 
+             Allow users to change their Head by giving the required Block ID
+commands:
+    hb:
+        description: To use Headblocks functionnalities
+        usage: /hb <s|self|o|other> [playerName] <blockId|blockName>
