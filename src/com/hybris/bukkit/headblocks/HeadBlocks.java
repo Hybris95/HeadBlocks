@@ -9,7 +9,7 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class HeadBlocks extends JavaPlugin{
 	
-	private Loggger log = null;
+	private Logger log = null;
 	private PermissionHandler permissions = null;
 	
 	public void onLoad(){}
