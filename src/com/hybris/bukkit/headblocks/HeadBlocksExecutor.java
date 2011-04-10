@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 
 import org.bukkit.entity.Player;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 class HeadBlocksExecutor implements CommandExecutor{
 	
@@ -33,7 +34,9 @@ class HeadBlocksExecutor implements CommandExecutor{
 					if(plugin.hasPermissions(sender, "hbs")){
 						// TODO Recuperer l'ancien et le mettre dans l'inventaire (si possible - sinon abandonner et return true)
 						player.getInventory().setHelmet(new ItemStack(material));
+						return true;
 					}
+					else{return false;}
 				}
 				else{return false;}
 			}
@@ -51,12 +54,16 @@ class HeadBlocksExecutor implements CommandExecutor{
 				if(plugin.hasPermissions(sender, "hbo")){
 					// TODO Recuperer l'ancien et le mettre dans l'inventaire (si possible - sinon abandonner et return true)
 					player.getInventory().setHelmet(new ItemStack(material));
+					return true;
 				}
+				else{return false;}
 			}
 			else{
 				return false; // Should never happen
 			}
+			
 		}
+		else{return false;} // Should never happen
 		
 	}
 	
