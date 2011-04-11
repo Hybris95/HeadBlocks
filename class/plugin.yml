@@ -1,10 +1,10 @@
 name: HeadBlocks
 main: com.hybris.bukkit.headblocks.HeadBlocks
-version: 0.3
+version: 0.3a
 website: 
 author: Hybris95,Socolin
 description: 
-             Allow users to change their Head by giving the required Block ID
+             Allow users to change their Head by giving the required Block
 commands:
     hb:
         description: To use Headblocks functionnalities
