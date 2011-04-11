@@ -31,26 +31,20 @@ class HeadBlocksExecutor implements CommandExecutor{
                     byte dataByte = 0;
                     String idOrMaterial = args[1];
                     Material material = null;
+		    byte data = 0;
                     if (idOrMaterial.contains(":")) {
                         String[] parts = idOrMaterial.split(":");
                         idOrMaterial = parts[0];
-                        material = idParse(idOrMaterial);
-                        String data = dataParse(parts[1],material.getId() );
-                        try {
-                             dataByte = Byte.parseByte(data);
-                        } catch (NumberFormatException e) {
-                            dataByte = 0;
-                        }
+                        data = dataParse(parts[1],material.getId());
                     }
-                    else
-                        material = idParse(idOrMaterial);
+		    material = idParse(idOrMaterial);
 
                     if(material == null){return false;}
-                    if(!material.isBlock())//TODO Message d'erreur
-                        {return false;}
+                    if(!material.isBlock()){return false;} // Message d'erreur ?
+		    
                     if(plugin.hasPermissions(sender, "self")){
                         // TODO Recuperer l'ancien et le mettre dans l'inventaire (si possible - sinon abandonner et return true)
-                        player.getInventory().setHelmet(new ItemStack(material, 1, (short)1, (byte)dataByte));
+                        player.getInventory().setHelmet(new ItemStack(material, 1, (short)1, data));
                         return true;
                     }
                     else{return false;}
@@ -67,26 +61,20 @@ class HeadBlocksExecutor implements CommandExecutor{
                 byte dataByte = 0;
                 String idOrMaterial = args[2];
                 Material material = null;
+		byte data = 0;
                 if (idOrMaterial.contains(":")) {
                     String[] parts = idOrMaterial.split(":");
                     idOrMaterial = parts[0];
-                    material = idParse(idOrMaterial);
-                    String data = dataParse(parts[1],material.getId() );
-                    try {
-                         dataByte = Byte.parseByte(data);
-                    } catch (NumberFormatException e) {
-                        dataByte = 0;
-                    }
+                    data = dataParse(parts[1],material.getId() );
                 }
-                else
-                    material = idParse(idOrMaterial);
+		material = idParse(idOrMaterial);
 
                 if(material == null){return false;}
                 if(!material.isBlock())//TODO Message d'erreur
                         {return false;}
                 if(plugin.hasPermissions(sender, "other")){
                     // TODO Recuperer l'ancien et le mettre dans l'inventaire (si possible - sinon abandonner et return true)
-                    player.getInventory().setHelmet(new ItemStack(material, 1, (short)1, (byte)dataByte)); // TODO Permettre de changer la couleur de la laine par exemple
+                    player.getInventory().setHelmet(new ItemStack(material, 1, (short)1, data)); // TODO Permettre de changer la couleur de la laine par exemple
                     return true;
                 }
                 else{return false;}
@@ -134,47 +122,47 @@ class HeadBlocksExecutor implements CommandExecutor{
                 case 44:
                     if (data.equalsIgnoreCase("sandstone")) {
                         return 1;
-                    } else if (data.equalsIgnoreCase("wood") {
+                    } else if (data.equalsIgnoreCase("wood")) {
                         return 2;
-                    } else if (data.equalsIgnoreCase("cobble") {
+                    } else if (data.equalsIgnoreCase("cobble")) {
                         return 3;
                     }
                     return 0;
                 case 35:
                     if (data.equalsIgnoreCase("orange")) {
                         return 1;
-                    } else if (data.equalsIgnoreCase("magenta") {
+                    } else if (data.equalsIgnoreCase("magenta")) {
                         return 2;
-                    } else if (data.equalsIgnoreCase("lightblue") {
+                    } else if (data.equalsIgnoreCase("lightblue")) {
                         return 3;
-                    } else if (data.equalsIgnoreCase("yellow") {
+                    } else if (data.equalsIgnoreCase("yellow")) {
                         return 4;
-                    } else if (data.equalsIgnoreCase("lightgreen") {
+                    } else if (data.equalsIgnoreCase("lightgreen")) {
                         return 5;
-                    } else if (data.equalsIgnoreCase("pink") {
+                    } else if (data.equalsIgnoreCase("pink")) {
                         return 6;
-                    } else if (data.equalsIgnoreCase("grey") {
+                    } else if (data.equalsIgnoreCase("grey")) {
                         return 7;
-                    } else if (data.equalsIgnoreCase("lightgrey") {
+                    } else if (data.equalsIgnoreCase("lightgrey")) {
                         return 8;
-                    } else if (data.equalsIgnoreCase("cyan") {
+                    } else if (data.equalsIgnoreCase("cyan")) {
                         return 9;
-                    } else if (data.equalsIgnoreCase("purple") {
+                    } else if (data.equalsIgnoreCase("purple")) {
                         return 10;
-                    } else if (data.equalsIgnoreCase("blue") {
+                    } else if (data.equalsIgnoreCase("blue")) {
                         return 11;
-                    } else if (data.equalsIgnoreCase("brown") {
+                    } else if (data.equalsIgnoreCase("brown")) {
                         return 12;
-                    } else if (data.equalsIgnoreCase("green") {
+                    } else if (data.equalsIgnoreCase("green")) {
                         return 13;
-                    } else if (data.equalsIgnoreCase("red") {
+                    } else if (data.equalsIgnoreCase("red")) {
                         return 14;
-                    } else if (data.equalsIgnoreCase("black") {
+                    } else if (data.equalsIgnoreCase("black")) {
                         return 15;
                     }
-                    return 0;
+		    default:
+			    return 0;
             }
-            dataByte = 0;
         }
     }
 
