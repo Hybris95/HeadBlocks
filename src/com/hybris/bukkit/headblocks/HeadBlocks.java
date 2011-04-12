@@ -8,6 +8,7 @@ import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class HeadBlocks extends JavaPlugin{
 	
@@ -35,7 +36,7 @@ public class HeadBlocks extends JavaPlugin{
 	public void onDisable(){
 		if(log != null){
 			log.info("[HeadBlocks Disabling...");
-			permissions = null;
+			unloadPermissions();
 			executor = null;
 			log.info("[HeadBlocks] Disabled");
 			log = null;
@@ -43,15 +44,41 @@ public class HeadBlocks extends JavaPlugin{
 	}
 	
 	private void loadPermissions(){
-		// TODO
+		Plugin test = getServer().getPluginManager().getPlugin("Permissions");
+			
+		if (permissions == null) {
+			if (test != null) {
+				getServer().getPluginManager().enablePlugin(test);
+				permissions = ((Permissions) test).getHandler();
+				log.info("[HeadBlocks] successfully loaded Permissions.");
+			}
+			else {
+				log.info("[HeadBlocks] not using Permissions. Permissions not detected");
+			}
+		}
 	}
 	
 	private void unloadPermissions(){
-		// TODO
+		permissions = null;
 	}
 	
 	boolean hasPermissions(CommandSender sender, String node){
-		return true; // TODO
+		String realNode = "headblocks." + node;
+		if(sender instanceof Player){
+			Player player = (Player)sender;
+			if(permissions != null){
+				return permissions.has(player, realNode);
+			}
+			else{
+				return player.isOp();
+			}
+		}
+		else if(sender.isOp()){
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 	
 }

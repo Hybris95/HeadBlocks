@@ -40,10 +40,10 @@ class HeadBlocksExecutor implements CommandExecutor{
 		    material = idParse(idOrMaterial);
 
                     if(material == null){return false;}
-                    if(!material.isBlock()){return false;} // Message d'erreur ?
+                    if(!material.isBlock()){return false;}
 		    
                     if(plugin.hasPermissions(sender, "self")){
-                        // TODO Recuperer l'ancien et le mettre dans l'inventaire (si possible - sinon abandonner et return true)
+                        // Recuperer l'ancien et l'enregistrer
                         player.getInventory().setHelmet(new ItemStack(material, 1, (short)1, data));
                         return true;
                     }
@@ -70,11 +70,11 @@ class HeadBlocksExecutor implements CommandExecutor{
 		material = idParse(idOrMaterial);
 
                 if(material == null){return false;}
-                if(!material.isBlock())//TODO Message d'erreur
-                        {return false;}
+                if(!material.isBlock()){return false;}
+		
                 if(plugin.hasPermissions(sender, "other")){
-                    // TODO Recuperer l'ancien et le mettre dans l'inventaire (si possible - sinon abandonner et return true)
-                    player.getInventory().setHelmet(new ItemStack(material, 1, (short)1, data)); // TODO Permettre de changer la couleur de la laine par exemple
+                    // Recuperer l'ancien et l'enregistrer
+                    player.getInventory().setHelmet(new ItemStack(material, 1, (short)1, data));
                     return true;
                 }
                 else{return false;}
