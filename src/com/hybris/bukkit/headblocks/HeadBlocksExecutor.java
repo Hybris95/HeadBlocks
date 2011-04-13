@@ -17,16 +17,18 @@ class HeadBlocksExecutor implements CommandExecutor{
 
     HeadBlocksExecutor(HeadBlocks plugin){
         this.plugin = plugin;
+	this.oldHelmets = new HashMap<String, ItemStack>();
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
 
         if(label.equals("hb")){
 
-            if(args.length <= 1){return false;}
+            if(args.length <= 0){return false;}
             if(!args[0].equalsIgnoreCase("self") && !args[0].equalsIgnoreCase("s") && !args[0].equalsIgnoreCase("other") && !args[0].equalsIgnoreCase("o") && !args[0].equalsIgnoreCase("undoself") && !args[0].equalsIgnoreCase("us")&& !args[0].equalsIgnoreCase("undoother") && !args[0].equalsIgnoreCase("uo")){return false;}
 
             if(args[0].equalsIgnoreCase("self") || args[0].equalsIgnoreCase("s")){
+		if(args.length <= 1){return false;}
                 // Self - Only if a Player
                 if(sender instanceof Player){
                     Player player = (Player)sender;
@@ -38,9 +40,12 @@ class HeadBlocksExecutor implements CommandExecutor{
                     if (idOrMaterial.contains(":")) {
                         String[] parts = idOrMaterial.split(":");
                         idOrMaterial = parts[0];
+			material = idParse(idOrMaterial);
                         data = dataParse(parts[1],material.getId());
                     }
-		    material = idParse(idOrMaterial);
+		    else{
+		        material = idParse(idOrMaterial);
+		    }
 
                     if(material == null){return false;}
                     if(!material.isBlock()){return false;}
@@ -70,9 +75,12 @@ class HeadBlocksExecutor implements CommandExecutor{
                 if (idOrMaterial.contains(":")) {
                     String[] parts = idOrMaterial.split(":");
                     idOrMaterial = parts[0];
-                    data = dataParse(parts[1],material.getId() );
+		    material = idParse(idOrMaterial);
+                    data = dataParse(parts[1],material.getId());
                 }
-		material = idParse(idOrMaterial);
+		else{
+		    material = idParse(idOrMaterial);
+		}
 
                 if(material == null){return false;}
                 if(!material.isBlock()){return false;}
@@ -93,6 +101,7 @@ class HeadBlocksExecutor implements CommandExecutor{
 				ItemStack oldItem = oldHelmets.get(player.getName());
 				if(oldItem != null){
 					player.getInventory().setHelmet(oldItem);
+					oldHelmets.remove(player.getName());
 					return true;
 				}
 				else{return true;}
@@ -111,6 +120,7 @@ class HeadBlocksExecutor implements CommandExecutor{
 			ItemStack oldItem = oldHelmets.get(player.getName());
 			if(oldItem != null){
 				player.getInventory().setHelmet(oldItem);
+				oldHelmets.remove(player.getName());
 				return true;
 			}
 			else{return true;}
