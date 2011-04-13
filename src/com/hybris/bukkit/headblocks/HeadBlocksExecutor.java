@@ -8,9 +8,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+
 class HeadBlocksExecutor implements CommandExecutor{
 
     private HeadBlocks plugin;
+    private HashMap<String, ItemStack> oldHelmets;
 
     HeadBlocksExecutor(HeadBlocks plugin){
         this.plugin = plugin;
@@ -21,7 +24,7 @@ class HeadBlocksExecutor implements CommandExecutor{
         if(label.equals("hb")){
 
             if(args.length <= 1){return false;}
-            if(!args[0].equalsIgnoreCase("self") && !args[0].equalsIgnoreCase("s") && !args[0].equalsIgnoreCase("other") && !args[0].equalsIgnoreCase("o")){return false;}
+            if(!args[0].equalsIgnoreCase("self") && !args[0].equalsIgnoreCase("s") && !args[0].equalsIgnoreCase("other") && !args[0].equalsIgnoreCase("o") && !args[0].equalsIgnoreCase("undoself") && !args[0].equalsIgnoreCase("us")&& !args[0].equalsIgnoreCase("undoother") && !args[0].equalsIgnoreCase("uo")){return false;}
 
             if(args[0].equalsIgnoreCase("self") || args[0].equalsIgnoreCase("s")){
                 // Self - Only if a Player
@@ -43,7 +46,9 @@ class HeadBlocksExecutor implements CommandExecutor{
                     if(!material.isBlock()){return false;}
 		    
                     if(plugin.hasPermissions(sender, "self")){
-                        // Recuperer l'ancien et l'enregistrer
+                        if(!oldHelmets.containsKey(player.getName())){
+				oldHelmets.put(player.getName(), player.getInventory().getHelmet());
+			}
                         player.getInventory().setHelmet(new ItemStack(material, 1, (short)1, data));
                         return true;
                     }
@@ -73,12 +78,45 @@ class HeadBlocksExecutor implements CommandExecutor{
                 if(!material.isBlock()){return false;}
 		
                 if(plugin.hasPermissions(sender, "other")){
-                    // Recuperer l'ancien et l'enregistrer
+		    if(!oldHelmets.containsKey(player.getName())){
+		        oldHelmets.put(player.getName(), player.getInventory().getHelmet());
+		    }
                     player.getInventory().setHelmet(new ItemStack(material, 1, (short)1, data));
                     return true;
                 }
                 else{return false;}
             }
+	    else if(args[0].equalsIgnoreCase("undoself") || args[0].equalsIgnoreCase("us")){
+		if(sender instanceof Player){
+			Player player = (Player)sender;
+			if(plugin.hasPermissions(sender, "self")){
+				ItemStack oldItem = oldHelmets.get(player.getName());
+				if(oldItem != null){
+					player.getInventory().setHelmet(oldItem);
+					return true;
+				}
+				else{return true;}
+			}
+			else{return false;}
+		}
+		else{return false;}
+	    }
+	    else if(args[0].equalsIgnoreCase("undoother") || args[0].equalsIgnoreCase("uo")){
+		if(args.length <= 1){return false;}
+		
+		String playerName = args[1];
+		Player player = plugin.getServer().getPlayer(playerName);
+		
+		if(plugin.hasPermissions(sender, "other")){
+			ItemStack oldItem = oldHelmets.get(player.getName());
+			if(oldItem != null){
+				player.getInventory().setHelmet(oldItem);
+				return true;
+			}
+			else{return true;}
+		}
+		else{return false;}
+	    }
             else{
                 return false; // Should never happen
             }
