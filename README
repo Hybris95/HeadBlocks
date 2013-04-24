@@ -1,8 +1,5 @@
 # Compilation libraries configuration
-Import craftbukkit.jar and Permissions.jar into the folder ./jars (create it if necessary)
-
-# Class folder creation
-Create the folder ./class also
+Import craftbukkit.jar into the folder ./jars (create it if necessary)
 
 # Compilation
 Use headblocks-compile.bash to compile on Linux
