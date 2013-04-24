@@ -1,19 +1,34 @@
+/*
+    HeadBlocks - The CraftBukkit plugin that allows you to change your Head item
+    Copyright (C) 2013  Hybris95
+    hybris_95@hotmail.com
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.hybris.bukkit.headblocks;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.logging.Logger;
 
 import org.bukkit.plugin.Plugin;
-import com.nijiko.permissions.PermissionHandler;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class HeadBlocks extends JavaPlugin{
-	
+    
 	private Logger log = null;
-	private PermissionHandler permissions = null;
 	private HeadBlocksExecutor executor = null;
 	
 	public void onLoad(){}
@@ -22,9 +37,9 @@ public class HeadBlocks extends JavaPlugin{
 		log = getServer().getLogger();
 		log.info("[HeadBlocks] Enabling...");
 		try{
-			loadPermissions();
 			executor = new HeadBlocksExecutor(this);
 			getCommand("hb").setExecutor(executor);
+    		getServer().getPluginManager().registerEvents(executor, this);
 			log.info("[HeadBlocks] Enabled");
 		}
 		catch(Exception e){
@@ -36,49 +51,22 @@ public class HeadBlocks extends JavaPlugin{
 	public void onDisable(){
 		if(log != null){
 			log.info("[HeadBlocks Disabling...");
-			unloadPermissions();
 			executor = null;
 			log.info("[HeadBlocks] Disabled");
 			log = null;
 		}
 	}
 	
-	private void loadPermissions(){
-		Plugin test = getServer().getPluginManager().getPlugin("Permissions");
-			
-		if (permissions == null) {
-			if (test != null) {
-				getServer().getPluginManager().enablePlugin(test);
-				permissions = ((Permissions) test).getHandler();
-				log.info("[HeadBlocks] successfully loaded Permissions.");
-			}
-			else {
-				log.info("[HeadBlocks] not using Permissions. Permissions not detected");
-			}
-		}
-	}
-	
-	private void unloadPermissions(){
-		permissions = null;
-	}
-	
 	boolean hasPermissions(CommandSender sender, String node){
 		String realNode = "headblocks." + node;
 		if(sender instanceof Player){
 			Player player = (Player)sender;
-			if(permissions != null){
-				return permissions.has(player, realNode);
-			}
-			else{
-				return player.isOp();
-			}
+            return player.hasPermission(realNode) ? true : player.isOp();
 		}
-		else if(sender.isOp()){
-			return true;
-		}
-		else{
-			return false;
-		}
+        else
+        {
+            return sender.isOp();
+        }
 	}
 	
 }
