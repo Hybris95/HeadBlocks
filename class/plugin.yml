@@ -1,6 +1,6 @@
 name: HeadBlocks
 main: com.hybris.bukkit.headblocks.HeadBlocks
-version: 0.7
+version: 0.8
 website: 
 author: Hybris95,Socolin
 description: 
@@ -8,4 +8,4 @@ description:
 commands:
     hb:
         description: To use Headblocks functionnalities
-        usage: /hb <s|self|o|other|undoself|us|undoother|uo> [playerName] [<<blockId|blockName>[:<data>]>]
+        usage: /hb <s|self|o|other|undoself|us|undoother|uo> [playerName] [<<blockName>[:<data>]>]

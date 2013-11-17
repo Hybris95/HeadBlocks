@@ -28,6 +28,15 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
+import org.bukkit.material.Leaves;
+import org.bukkit.material.Wool;
+import org.bukkit.material.WoodenStep;
+import org.bukkit.material.Tree;
+import org.bukkit.material.Sandstone;
+import org.bukkit.DyeColor;
+import org.bukkit.SandstoneType;
+import org.bukkit.TreeSpecies;
+
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -41,6 +50,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.HashMap;
+import java.lang.reflect.InvocationTargetException;
 
 class HeadBlocksExecutor implements CommandExecutor, Listener{
 
@@ -88,6 +98,81 @@ class HeadBlocksExecutor implements CommandExecutor, Listener{
 			}
 		}
 	}
+	
+	private boolean parseChangeBlock(CommandSender sender, Player target, String materialName)
+	{		
+		String data = "";
+		if(materialName.contains(":"))
+		{
+			String[] parts = materialName.split(":");
+			materialName = parts[0];
+			data = parts[1].toUpperCase();
+		}
+		materialName = materialName.toUpperCase();
+		
+		MaterialData materialData = null;
+		if(sender instanceof Player && sender == target && plugin.hasPermissions(sender, "self")){}
+		else if(plugin.hasPermissions(sender, "other")){}
+		else
+		{
+			// NO RIGHTS
+			sender.sendMessage("You do not have rights for that command!");
+			return false;
+		}
+		
+		if(data != "")
+		{
+			try{
+				materialData = idParse(materialName).getData().getConstructor().newInstance();
+			}
+			catch(NoSuchMethodException e){}
+			catch(InstantiationException e){}
+			catch(IllegalAccessException e){}
+			catch(InvocationTargetException e){}
+			catch(NullPointerException e){}
+			MaterialData givenData = dataParse(data, materialData);
+			if(givenData != materialData)
+			{
+				materialData = givenData;
+			}
+			else
+			{
+				sender.sendMessage("Data Not Found !");
+			}
+		}
+		else
+		{
+			try{
+				materialData = idParse(materialName).getData().getConstructor().newInstance();
+			}
+			catch(NoSuchMethodException e){}
+			catch(InstantiationException e){}
+			catch(IllegalAccessException e){}
+			catch(InvocationTargetException e){}
+			catch(NullPointerException e){}
+		}
+		
+		if(materialData == null)
+		{
+			// MATERIAL NOT FOUND
+			sender.sendMessage("Material Not Found !");
+			return false;
+		}
+		else if (!materialData.getItemType().isBlock())
+		{
+			// IS NOT A BLOCK
+			sender.sendMessage("Material given is not a block !");
+			return false;
+		}
+		
+		if (!oldHelmets.containsKey(target.getName())) 
+		{
+    		oldHelmets.put(target.getName(), target.getInventory().getHelmet());
+    	}
+		ItemStack newItem = materialData.toItemStack();
+		target.getInventory().setHelmet(newItem);
+		return true;
+	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
@@ -106,39 +191,8 @@ class HeadBlocksExecutor implements CommandExecutor, Listener{
 				}
 				// Self - Only if a Player
 				if (sender instanceof Player) {
-					Player player = (Player) sender;
-
-					byte dataByte = 0;
-					String idOrMaterial = args[1];
-    				Material material = null;
-    				byte data = 0;
-    				if (idOrMaterial.contains(":")) {
-    					String[] parts = idOrMaterial.split(":");
-    					idOrMaterial = parts[0];
-    					material = idParse(idOrMaterial);
-    					data = dataParse(parts[1], material.getId());
-    				} else {
-    					material = idParse(idOrMaterial);
-    				}
-
-    				if (material == null) {
-    					return false;
-    				}
-    				if (!material.isBlock()) {
-    					return false;
-    				}
-
-    				if (plugin.hasPermissions(sender, "self")) {
-    					if (!oldHelmets.containsKey(player.getName())) {
-    						oldHelmets.put(player.getName(), player.getInventory().getHelmet());
-    					}
-    					ItemStack newItem = new ItemStack(material, 1, (short) 1);
-    					newItem.setData(new MaterialData(material, data));
-    					player.getInventory().setHelmet(newItem);
-    					return true;
-    				} else {
-    					return false;
-    				}
+					Player target = (Player) sender;
+					return parseChangeBlock(sender, target, args[1]);
     			} else {
     				return false;
     			}
@@ -148,42 +202,12 @@ class HeadBlocksExecutor implements CommandExecutor, Listener{
     			}
 
     			String playerName = args[1];
-    			Player player = plugin.getServer().getPlayer(playerName);
-    			if (player == null) {
+    			Player target = plugin.getServer().getPlayer(playerName);
+    			if (target == null) {
     				return false;
     			}
-
-    			byte dataByte = 0;
-    			String idOrMaterial = args[2];
-    			Material material = null;
-    			byte data = 0;
-    			if (idOrMaterial.contains(":")) {
-    				String[] parts = idOrMaterial.split(":");
-    				idOrMaterial = parts[0];
-    				material = idParse(idOrMaterial);
-    				data = dataParse(parts[1], material.getId());
-    			} else {
-    				material = idParse(idOrMaterial);
-    			}
-
-    			if (material == null) {
-    				return false;
-    			}
-    			if (!material.isBlock()) {
-    				return false;
-    			}
-
-    			if (plugin.hasPermissions(sender, "other")) {
-    				if (!oldHelmets.containsKey(player.getName())) {
-    					oldHelmets.put(player.getName(), player.getInventory().getHelmet());
-    				}
-    				ItemStack newItem = new ItemStack(material, 1, (short) 1);
-    				newItem.setData(new MaterialData(material, data));
-    				player.getInventory().setHelmet(newItem);
-    				return true;
-    			} else {
-    				return false;
-    			}
+				
+				return parseChangeBlock(sender, target, args[2]);
     		} else if (args[0].equalsIgnoreCase("undoself") || args[0].equalsIgnoreCase("us")) {
     			if (sender instanceof Player) {
     				Player player = (Player) sender;
@@ -194,6 +218,7 @@ class HeadBlocksExecutor implements CommandExecutor, Listener{
     						oldHelmets.remove(player.getName());
     						return true;
     					} else {
+							player.getInventory().setHelmet(null);
     						return true;
     					}
     				} else {
@@ -217,6 +242,7 @@ class HeadBlocksExecutor implements CommandExecutor, Listener{
     					oldHelmets.remove(player.getName());
     					return true;
     				} else {
+						player.getInventory().setHelmet(null);
     					return true;
     				}
     			} else {
@@ -232,82 +258,114 @@ class HeadBlocksExecutor implements CommandExecutor, Listener{
 
     }
 
-    private Material idParse(String idOrMaterial){
-        Material material = null;
-        int id = -1;
-        try{
-            id = Integer.parseInt(idOrMaterial);
-            material = Material.getMaterial(id);
-        }
-        catch(NumberFormatException e){}
-
-        if(material == null){
-            material = Material.matchMaterial(idOrMaterial);
-        }
-        return material;
+    private Material idParse(String material)
+	{
+		material = material.toUpperCase();
+		
+		Material[] values = Material.values();
+		for(int i = 0; i < values.length; i++)
+		{
+			if(material.equals(values[i].toString()))
+			{
+				return values[i];
+			}
+		}
+		return null;
     }
 
-    private byte dataParse(String data,int id)
+    private MaterialData dataParse(String data, MaterialData type)
     {
-        try {
-             return Byte.parseByte(data);
-        } catch (NumberFormatException e) {
-            switch (id)
-            {
-                case 17:
-                case 18:
-                    if (data.equalsIgnoreCase("redwood")) {
-                        return 1;
-                    } else if (data.equalsIgnoreCase("birch") || data.equalsIgnoreCase("bouleau")) {
-                        return 2;
-                    }
-                    return 0;
-                case 43:
-                case 44:
-                    if (data.equalsIgnoreCase("sandstone")) {
-                        return 1;
-                    } else if (data.equalsIgnoreCase("wood")) {
-                        return 2;
-                    } else if (data.equalsIgnoreCase("cobble")) {
-                        return 3;
-                    }
-                    return 0;
-                case 35:
-                    if (data.equalsIgnoreCase("orange")) {
-                        return 1;
-                    } else if (data.equalsIgnoreCase("magenta")) {
-                        return 2;
-                    } else if (data.equalsIgnoreCase("lightblue")) {
-                        return 3;
-                    } else if (data.equalsIgnoreCase("yellow")) {
-                        return 4;
-                    } else if (data.equalsIgnoreCase("lightgreen")) {
-                        return 5;
-                    } else if (data.equalsIgnoreCase("pink")) {
-                        return 6;
-                    } else if (data.equalsIgnoreCase("grey")) {
-                        return 7;
-                    } else if (data.equalsIgnoreCase("lightgrey")) {
-                        return 8;
-                    } else if (data.equalsIgnoreCase("cyan")) {
-                        return 9;
-                    } else if (data.equalsIgnoreCase("purple")) {
-                        return 10;
-                    } else if (data.equalsIgnoreCase("blue")) {
-                        return 11;
-                    } else if (data.equalsIgnoreCase("brown")) {
-                        return 12;
-                    } else if (data.equalsIgnoreCase("green")) {
-                        return 13;
-                    } else if (data.equalsIgnoreCase("red")) {
-                        return 14;
-                    } else if (data.equalsIgnoreCase("black")) {
-                        return 15;
-                    }
-		    default:
-			    return 0;
-            }
-        }
-    }
-
+		MaterialData toReturn = type;
+		if(type instanceof Leaves)
+		{
+			Leaves leavesSpecies = null;
+			TreeSpecies[] values = TreeSpecies.values();
+			for(int i = 0; i < values.length; i++)
+			{
+				if(data.equals(values[i].toString()))
+				{
+					leavesSpecies = new Leaves(values[i]);
+					break;
+				}
+			}
+			if(leavesSpecies != null)
+			{
+				toReturn = leavesSpecies;
+			}
+		}
+		else if(type instanceof Sandstone)
+		{
+			Sandstone sandstone = null;
+			SandstoneType[] values = SandstoneType.values();
+			for(int i = 0; i < values.length; i++)
+			{
+				if(data.equals(values[i].toString()))
+				{
+					sandstone = new Sandstone(values[i]);
+					break;
+				}
+			}
+			if(sandstone != null)
+			{
+				toReturn = sandstone;
+			}
+		}
+		else if(type instanceof Tree)
+		{
+			Tree tree = null;
+			TreeSpecies[] values = TreeSpecies.values();
+			for(int i = 0; i < values.length; i++)
+			{
+				if(data.equals(values[i].toString()))
+				{
+					tree = new Tree(values[i]);
+					break;
+				}
+			}
+			if(tree != null)
+			{
+				toReturn = tree;
+			}
+		}
+		else if(type instanceof WoodenStep)
+		{
+			WoodenStep woodenStep = null;
+			TreeSpecies[] values = TreeSpecies.values();
+			for(int i = 0; i < values.length; i++)
+			{
+				if(data.equals(values[i].toString()))
+				{
+					woodenStep = new WoodenStep(values[i]);
+					break;
+				}
+			}
+			if(woodenStep != null)
+			{
+				toReturn = woodenStep;
+			}
+		}
+		else if(type instanceof Wool)
+		{
+			Wool woolColored = null;
+			DyeColor[] values = DyeColor.values();
+			for(int i = 0; i < values.length; i++)
+			{
+				if(data.equals(values[i].toString()))
+				{
+					woolColored = new Wool(values[i]);
+					break;
+				}
+			}
+			if(woolColored != null)
+			{
+				toReturn = woolColored;
+			}
+		}
+		else
+		{
+			// Unknown specific data material (Should be maintained in order to offer the most valuable modifyable Materials)
+			// TODO - Send a message to the sender ?
+		}
+		return toReturn;
+	}
 }
