@@ -43,6 +43,8 @@ import org.bukkit.event.EventPriority;
 
 import org.bukkit.event.world.WorldSaveEvent;
 
+import org.bukkit.event.player.PlayerQuitEvent;
+
 import org.bukkit.event.inventory.InventoryEvent;
 //import org.bukkit.event.Event.Result;
 import org.bukkit.inventory.Inventory;
@@ -69,6 +71,22 @@ class HeadBlocksExecutor implements CommandExecutor, Listener{
 	public void onWorldSave(WorldSaveEvent e)
 	{
 		// TODO - Save the oldHelmets in a file
+	}
+	
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onPlayerDisconnect(PlayerQuitEvent e)
+	{
+		Player who = e.getPlayer();
+		if (oldHelmets.containsKey(who.getName())) 
+		{
+			ItemStack oldItem = oldHelmets.get(who.getName());
+			if (oldItem != null) {
+				who.getInventory().setHelmet(oldItem);
+				oldHelmets.remove(who.getName());
+			} else {
+				who.getInventory().setHelmet(null);
+			}
+    	}
 	}
 	
 	// TODO - Disallow dropping or taking away the helmet given
