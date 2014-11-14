@@ -89,7 +89,7 @@ class HeadBlocksExecutor implements CommandExecutor, Listener{
     	}
 	}
 	
-	// TODO - Disallow dropping or taking away the helmet given
+	// TODO - Disallow dropping or taking away the helmet given - drop it effectively but add it again if doing so
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onInventoryEvent(InventoryEvent e)
 	{
@@ -220,9 +220,17 @@ class HeadBlocksExecutor implements CommandExecutor, Listener{
     			}
 
     			String playerName = args[1];
-    			Player target = plugin.getServer().getPlayer(playerName);
+                Player[] onlinePlayers = plugin.getServer().getOnlinePlayers();
+    			Player target = null;
+                for(int i = 0; i < onlinePlayers.length; i++) {
+                    Player onlinePlayer = onlinePlayers[i];
+                    if(onlinePlayer.getName().equals(playerName)){
+                        target = onlinePlayer;
+                        break;
+                    }
+                }
     			if (target == null) {
-    				return false;
+                    return false;
     			}
 				
 				return parseChangeBlock(sender, target, args[2]);
@@ -251,7 +259,18 @@ class HeadBlocksExecutor implements CommandExecutor, Listener{
     			}
 
     			String playerName = args[1];
-    			Player player = plugin.getServer().getPlayer(playerName);
+                Player[] onlinePlayers = plugin.getServer().getOnlinePlayers();
+    			Player player = null;
+                for(int i = 0; i < onlinePlayers.length; i++) {
+                    Player onlinePlayer = onlinePlayers[i];
+                    if(onlinePlayer.getName().equals(playerName)){
+                        player = onlinePlayer;
+                        break;
+                    }
+                }
+                if(player == null){
+                    return false;
+                }
 
     			if (plugin.hasPermissions(sender, "other")) {
     				ItemStack oldItem = oldHelmets.get(player.getName());
